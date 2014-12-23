@@ -69,59 +69,55 @@ server <- function(input, output) {
     expr1.subset <- expr.subset(expr1, input$text1)
     validate(need(nrow(expr1.subset) > 0, 'This plot will update as you enter valid gene names!'))
     
-    a <- ggplot(expr1.subset, aes(x = Gene, fill = Treatment)) +
-         ggtitle('Normalized Expression Levels') + scale_fill_grey() + common.theme
+    plot.base <- ggplot(expr1.subset, aes(x = Gene, fill = Treatment)) + 
+                 ggtitle('Normalized Expression Levels') + scale_fill_grey() + common.theme
   
     if (input$log1) {
-      a <- a + geom_boxplot(aes(y = Expression)) + ylab(expression(log[2] * ' Expression Level (AU)'))}
+      plot.base + geom_boxplot(aes(y = Expression)) + ylab(expression(log[2] * ' Expression Level (AU)'))}
     else {
-      a <- a + geom_boxplot(aes(y = 2 ^ Expression)) + ylab('Expression Level (AU)')}
-    a})
+      plot.base + geom_boxplot(aes(y = 2 ^ Expression)) + ylab('Expression Level (AU)')}})
 
   output$BoxPlot2 <- renderPlot({
     expr3.subset <- expr.subset(expr3, input$text2)
     validate(need(nrow(expr3.subset) > 0, 'This plot will update as you enter valid gene names!'))
     
-    a <- ggplot(expr3.subset, aes(x = Gene, fill = Stage)) + facet_wrap(~ Strain) + 
-         ggtitle('Normalized Expression Levels') + common.theme
+    plot.base <- ggplot(expr3.subset, aes(x = Gene, fill = Stage)) + facet_wrap(~ Strain) + 
+                 ggtitle('Normalized Expression Levels') + common.theme
     if (input$log2) {
-      a <- a + geom_boxplot(aes(y = Expression)) + ylab(expression(log[2] * ' Expression Level (AU)'))}
+      plot.base + geom_boxplot(aes(y = Expression)) + ylab(expression(log[2] * ' Expression Level (AU)'))}
     else {
-      a <- a + geom_boxplot(aes(y = 2 ^ Expression)) + ylab('Expression Level (AU)')}
-    a})
+      plot.base + geom_boxplot(aes(y = 2 ^ Expression)) + ylab('Expression Level (AU)')}})
   
   # Render bar plots with differential expression levels
   output$BarPlot1 <- renderPlot({
     expr2.subset <- expr.subset(expr2, input$text1)
     validate(need(nrow(expr2.subset) > 0, 'This plot will update as you enter valid gene names!'))
     
-    a <- ggplot(expr2.subset, aes(x = Gene)) +
-         ggtitle('Differential Expression Levels') + common.theme
+    plot.base <- ggplot(expr2.subset, aes(x = Gene)) +
+                 ggtitle('Differential Expression Levels') + common.theme
     if (input$log1) {
-      a <- a + geom_bar(aes(y = logFC), stat = 'identity') +
-               geom_errorbar(aes(ymax = logFC.U, ymin = logFC.L), width = I(0.5)) +
-               ylab(expression(log[2] * ' Fold Change'))}
+      plot.base + geom_bar(aes(y = logFC), stat = 'identity') +
+                  geom_errorbar(aes(ymax = logFC.U, ymin = logFC.L), width = I(0.5)) +
+                  ylab(expression(log[2] * ' Fold Change'))}
     else {
-      a <- a + geom_bar(aes(y = FC), stat = 'identity') +
-               geom_errorbar(aes(ymax = FC.U, ymin = FC.L), width = I(0.5)) +
-               ylab('Fold Change')}
-    a})
+      plot.base + geom_bar(aes(y = FC), stat = 'identity') +
+                  geom_errorbar(aes(ymax = FC.U, ymin = FC.L), width = I(0.5)) +
+                  ylab('Fold Change')}})
 
   output$BarPlot2 <- renderPlot({
     expr4.subset <- expr.subset(expr4, input$text2)
     validate(need(nrow(expr4.subset) > 0, 'This plot will update as you enter valid gene names!'))
     
-    a <- ggplot(expr4.subset, aes(x = Gene)) + facet_wrap(~ Strain) +
-         ggtitle('Differential Expression Levels') + common.theme
+    plot.base <- ggplot(expr4.subset, aes(x = Gene)) + facet_wrap(~ Strain) +
+                 ggtitle('Differential Expression Levels') + common.theme
     if (input$log2) {
-      a <- a + geom_bar(aes(y = logFC), stat = 'identity') +
-               geom_errorbar(aes(ymax = logFC.U, ymin = logFC.L), width = I(0.5)) +
-               ylab(expression(log[2] * ' Fold Change'))}
+      plot.base + geom_bar(aes(y = logFC), stat = 'identity') +
+                  geom_errorbar(aes(ymax = logFC.U, ymin = logFC.L), width = I(0.5)) +
+                  ylab(expression(log[2] * ' Fold Change'))}
     else {
-      a <- a + geom_bar(aes(y = FC), stat = 'identity') +
-               geom_errorbar(aes(ymax = FC.U, ymin = FC.L), width = I(0.5)) +
-               ylab('Fold Change')}
-    a})
+      plot.base + geom_bar(aes(y = FC), stat = 'identity') +
+                  geom_errorbar(aes(ymax = FC.U, ymin = FC.L), width = I(0.5)) +
+                  ylab('Fold Change')}})
   
   # Render tables with differential expression levels
   output$Table1 <- renderTable({
@@ -196,8 +192,7 @@ ui <- shinyUI(navbarPage(title       = 'Kurzchalia Microarray Database 0.1',
                    h4(em(textOutput('Title2.3'))), tableOutput('Table2.3'),
                    h4(em(textOutput('Title2.4'))), tableOutput('Table2.4'))))))),               
 
-  tabPanel('Help', includeMarkdown('Help.md'))
-))
+  tabPanel('Help', includeMarkdown('Help.md'))))
 
 # Run the app
 shinyApp(ui = ui, server = server)
