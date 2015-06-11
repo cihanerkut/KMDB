@@ -22,16 +22,18 @@ common.theme <- theme(legend.position = "bottom",
                       axis.title.x = element_blank(),
                       axis.text.x = element_text(face = 'italic')) 
 
+msgPlot <- 'This plot will update as you enter valid gene names!'
+msgTable <- 'This table will update as you enter valid gene names!'
+msgEntry <- 'Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)'
+
 # Utility functions
 trim <- function(x) {
   pattern <- '(^[[:space:]]+|[[:space:]]+$)'
-  trimmed <- gsub(pattern, '', x)
-  return(trimmed)}
+  trimmed <- gsub(pattern, '', x)}
 
 expr.subset <- function(expr.df, genelist) {
   genes.selected <- trim(unlist(strsplit(genelist, ',')))
-  expr.selected <- expr.df[expr.df$Gene %in% genes.selected, ]
-  return(expr.selected)}
+  expr.selected <- expr.df[expr.df$Gene %in% genes.selected, ]}
 
 link.wb <- function(x) {
   HTML(as.character(a(href = paste(wb.url, x, sep = ''), x, target = '_blank')))}
@@ -63,7 +65,9 @@ server <- function(input, output) {
   # Render box-plots with normalized expression levels
   output$BoxPlot1 <- renderPlot({
     expr1.subset <- expr.subset(expr1, input$text1)
-    validate(need(nrow(expr1.subset) > 0, 'This plot will update as you enter valid gene names!'))
+    validate(
+      need(
+        nrow(expr1.subset) > 0, msgPlot))
     
     plot.base <- ggplot(expr1.subset, aes(x = Gene, fill = Treatment)) + 
                  ggtitle('Normalized Expression Levels') + scale_fill_grey() + common.theme
@@ -74,7 +78,9 @@ server <- function(input, output) {
 
   output$BoxPlot2 <- renderPlot({
     expr3.subset <- expr.subset(expr3, input$text2)
-    validate(need(nrow(expr3.subset) > 0, 'This plot will update as you enter valid gene names!'))
+    validate(
+      need(
+        nrow(expr3.subset) > 0, msgPlot))
     
     plot.base <- ggplot(expr3.subset, aes(x = Gene, fill = Stage)) + facet_wrap(~ Strain) + 
                  ggtitle('Normalized Expression Levels') + common.theme
@@ -86,7 +92,9 @@ server <- function(input, output) {
   # Render bar plots with differential expression levels
   output$BarPlot1 <- renderPlot({
     expr2.subset <- expr.subset(expr2, input$text1)
-    validate(need(nrow(expr2.subset) > 0, 'This plot will update as you enter valid gene names!'))
+    validate(
+      need(
+        nrow(expr2.subset) > 0, msgPlot))
     
     plot.base <- ggplot(expr2.subset, aes(x = Gene)) +
                  ggtitle('Differential Expression Levels') + common.theme
@@ -101,7 +109,9 @@ server <- function(input, output) {
 
   output$BarPlot2 <- renderPlot({
     expr4.subset <- expr.subset(expr4, input$text2)
-    validate(need(nrow(expr4.subset) > 0, 'This plot will update as you enter valid gene names!'))
+    validate(
+      need(
+        nrow(expr4.subset) > 0, msgPlot))
     
     plot.base <- ggplot(expr4.subset, aes(x = Gene)) + facet_wrap(~ Strain) +
                  ggtitle('Differential Expression Levels') + common.theme
@@ -117,31 +127,41 @@ server <- function(input, output) {
   # Render tables with differential expression levels
   output$Table1 <- renderTable({
     expr2.subset <- expr.subset(expr2, input$text1)
-    validate(need(nrow(expr2.subset) > 0, 'This table will update as you enter valid gene names!')) 
+    validate(
+      need(
+        nrow(expr2.subset) > 0, msgTable)) 
     expr2.subset$Gene <- sapply(expr2.subset$Gene, link.wb)
     xtable(expr2.subset)}, digits = 3, sanitize.text.function = function(x) x)
   
   output$Table2.1 <- renderTable({
     expr4.subset <- expr.subset(expr4[expr4$Strain == 'N2', -2], input$text2)
-    validate(need(nrow(expr4.subset) > 0, 'This table will update as you enter valid gene names!'))
+    validate(
+      need(
+        nrow(expr4.subset) > 0, msgTable))
     expr4.subset$Gene <- sapply(expr4.subset$Gene, link.wb)
     xtable(expr4.subset)}, digits = 3, sanitize.text.function = function(x) x)
   
   output$Table2.2 <- renderTable({
     expr4.subset <- expr.subset(expr4[expr4$Strain == 'daf-2', -2], input$text2)
-    validate(need(nrow(expr4.subset) > 0, 'This table will update as you enter valid gene names!'))
+    validate(
+      need(
+        nrow(expr4.subset) > 0, msgTable))
     expr4.subset$Gene <- sapply(expr4.subset$Gene, link.wb)
     xtable(expr4.subset)}, digits = 3, sanitize.text.function = function(x) x)
 
   output$Table2.3 <- renderTable({
     expr4.subset <- expr.subset(expr4[expr4$Strain == 'daf-2;daf-12', -2], input$text2)
-    validate(need(nrow(expr4.subset) > 0, 'This table will update as you enter valid gene names!'))
+    validate(
+      need(
+        nrow(expr4.subset) > 0, msgTable))
     expr4.subset$Gene <- sapply(expr4.subset$Gene, link.wb)
     xtable(expr4.subset)}, digits = 3, sanitize.text.function = function(x) x)
   
   output$Table2.4 <- renderTable({
     expr4.subset <- expr.subset(expr4[expr4$Strain == 'daf-16', -2], input$text2)
-    validate(need(nrow(expr4.subset) > 0, 'This table will update as you enter valid gene names!'))
+    validate(
+      need(
+        nrow(expr4.subset) > 0, msgTable))
     expr4.subset$Gene <- sapply(expr4.subset$Gene, link.wb)
     xtable(expr4.subset)}, digits = 3, sanitize.text.function = function(x) x)
   
@@ -152,14 +172,15 @@ server <- function(input, output) {
 
 # GUI function
 ui <- shinyUI(navbarPage(title = 'Kurzchalia Microarray Database 0.1',
-                         collapsable = T, 
+                         collapsible = T, 
                          windowTitle = 'Kurzchalia Microarray Database',
   tabPanel('Desiccation',   
     fluidPage(
       titlePanel("Desiccation"),
         sidebarLayout(  
           sidebarPanel(
-            textInput("text1", label = "Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)"),
+            tags$style(type="text/css", "textarea {width:100%}"),
+            tags$textarea(name = "text1", rows = 3, wrap = 'soft', placeholder = msgEntry),
             checkboxInput("log1", label = HTML(paste('Show y-axis in log', tags$sub(2), ' scale', sep = '')))),
       
       mainPanel(
@@ -173,7 +194,8 @@ ui <- shinyUI(navbarPage(title = 'Kurzchalia Microarray Database 0.1',
       titlePanel("Hypometabolism"),
         sidebarLayout(  
           sidebarPanel(
-            textInput("text2", label = "Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)"),
+            tags$style(type="text/css", "textarea {width:100%}"),
+            tags$textarea(name = "text2", rows = 3, wrap = 'soft', placeholder = msgEntry),
             checkboxInput("log2", label = HTML(paste('Show y-axis in log', tags$sub(2), ' scale', sep = '')))),
                
       mainPanel(
