@@ -180,11 +180,7 @@ ui <- shinyUI(navbarPage(title = 'Kurzchalia Microarray Database 0.1',
         sidebarLayout(  
           sidebarPanel(
             tags$style(type="text/css", "textarea {width:100%}"),
-<<<<<<< HEAD
             tags$textarea(name = "text1", rows = 3, wrap = 'soft', placeholder = msgEntry),
-=======
-            tags$textarea(name = "text1", rows = 3, wrap = 'soft', placeholder = 'Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)'),
->>>>>>> 72d69eac561921509aaa03b7c6ba670a202bd232
             checkboxInput("log1", label = HTML(paste('Show y-axis in log', tags$sub(2), ' scale', sep = '')))),
       
       mainPanel(
@@ -199,11 +195,7 @@ ui <- shinyUI(navbarPage(title = 'Kurzchalia Microarray Database 0.1',
         sidebarLayout(  
           sidebarPanel(
             tags$style(type="text/css", "textarea {width:100%}"),
-<<<<<<< HEAD
             tags$textarea(name = "text2", rows = 3, wrap = 'soft', placeholder = msgEntry),
-=======
-            tags$textarea(name = "text2", rows = 3, wrap = 'soft', placeholder = 'Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)'),
->>>>>>> 72d69eac561921509aaa03b7c6ba670a202bd232
             checkboxInput("log2", label = HTML(paste('Show y-axis in log', tags$sub(2), ' scale', sep = '')))),
                
       mainPanel(
