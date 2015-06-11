@@ -25,13 +25,11 @@ common.theme <- theme(legend.position = "bottom",
 # Utility functions
 trim <- function(x) {
   pattern <- '(^[[:space:]]+|[[:space:]]+$)'
-  trimmed <- gsub(pattern, '', x)
-  return(trimmed)}
+  trimmed <- gsub(pattern, '', x)}
 
 expr.subset <- function(expr.df, genelist) {
   genes.selected <- trim(unlist(strsplit(genelist, ',')))
-  expr.selected <- expr.df[expr.df$Gene %in% genes.selected, ]
-  return(expr.selected)}
+  expr.selected <- expr.df[expr.df$Gene %in% genes.selected, ]}
 
 link.wb <- function(x) {
   HTML(as.character(a(href = paste(wb.url, x, sep = ''), x, target = '_blank')))}
@@ -152,14 +150,15 @@ server <- function(input, output) {
 
 # GUI function
 ui <- shinyUI(navbarPage(title = 'Kurzchalia Microarray Database 0.1',
-                         collapsable = T, 
+                         collapsible = T, 
                          windowTitle = 'Kurzchalia Microarray Database',
   tabPanel('Desiccation',   
     fluidPage(
       titlePanel("Desiccation"),
         sidebarLayout(  
           sidebarPanel(
-            textInput("text1", label = "Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)"),
+            tags$style(type="text/css", "textarea {width:100%}"),
+            tags$textarea(name = "text1", rows = 3, wrap = 'soft', placeholder = 'Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)'),
             checkboxInput("log1", label = HTML(paste('Show y-axis in log', tags$sub(2), ' scale', sep = '')))),
       
       mainPanel(
@@ -173,7 +172,8 @@ ui <- shinyUI(navbarPage(title = 'Kurzchalia Microarray Database 0.1',
       titlePanel("Hypometabolism"),
         sidebarLayout(  
           sidebarPanel(
-            textInput("text2", label = "Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)"),
+            tags$style(type="text/css", "textarea {width:100%}"),
+            tags$textarea(name = "text2", rows = 3, wrap = 'soft', placeholder = 'Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)'),
             checkboxInput("log2", label = HTML(paste('Show y-axis in log', tags$sub(2), ' scale', sep = '')))),
                
       mainPanel(
