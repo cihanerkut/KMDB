@@ -1,6 +1,5 @@
 # Kurzchalia Microarray Database
 # Copyright (C) 2015  Cihan Erkut
-# Copyright (C) <year>  <name of author>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -43,7 +42,7 @@ common.theme <- theme(legend.position = "bottom",
                       strip.text = element_text(face = 'bold'),
                       panel.border = element_rect(colour = 'black', fill = NA), 
                       axis.title.x = element_blank(),
-                      axis.text.x = element_text(face = 'italic')) 
+                      axis.text.x = element_text(face = 'italic'))
 
 msgEntry <- 'Type in valid gene names separated by comma (e.g. tps-1, F08H9.4)'
 msgPlot <- 'This plot will update as you enter valid gene names!'
@@ -54,14 +53,17 @@ msgConditionTable <- 'This table will update as you select strains!'
 # Utility functions
 trim <- function(x) {
   pattern <- '(^[[:space:]]+|[[:space:]]+$)'
-  trimmed <- gsub(pattern, '', x)}
+  trimmed <- gsub(pattern, '', x)
+}
 
 expr.subset <- function(expr.df, geneList) {
   genes.selected <- trim(unlist(strsplit(geneList, ',')))
-  expr.selected <- expr.df[expr.df$Gene %in% genes.selected, ]}
+  expr.selected <- expr.df[expr.df$Gene %in% genes.selected, ]
+}
 
 link.wb <- function(x) {
-  HTML(as.character(a(href = paste(wb.url, x, sep = ''), x, target = '_blank')))}
+  HTML(as.character(a(href = paste(wb.url, x, sep = ''), x, target = '_blank')))
+}
 
 buildExpr <- function(expr.df, input.query, input.text, input.geneClass, input.conditions = NULL) {
   if(input.query == 'Genes') {
@@ -89,128 +91,166 @@ server <- function(input, output) {
   # Render box-plots with normalized expression levels
   output$BoxPlot1 <- renderPlot({
     plot.data <- data1()
-    validate(need(nrow(plot.data) > 0, msgPlot))
+    validate(
+      need(
+        nrow(plot.data) > 0, msgPlot
+      )
+    )
     plot.base <- ggplot(plot.data, aes(x = Gene, fill = Treatment)) + 
-                 ggtitle('Normalized Expression Levels') + scale_fill_grey() + common.theme
+                 ggtitle('Normalized Expression Levels') + 
+                 scale_fill_grey() + 
+                 common.theme
     if (input$log1)
-      plot.base + geom_boxplot(aes(y = Expression)) + ylab(expression(log[2] * ' Expression Level (AU)'))
+      plot.base + 
+      geom_boxplot(aes(y = Expression)) + 
+      ylab(expression(log[2] * ' Expression Level (AU)'))
     else
-      plot.base + geom_boxplot(aes(y = 2 ^ Expression)) + ylab('Expression Level (AU)')
+      plot.base + 
+      geom_boxplot(aes(y = 2 ^ Expression)) + 
+      ylab('Expression Level (AU)')
   })
 
   output$BoxPlot2 <- renderPlot({
-    validate(need(length(input$conditions) > 0, msgConditionPlot))
+    validate(
+      need(
+        length(input$conditions) > 0, msgConditionPlot
+      )
+    )
     plot.data <- data2()
-    validate(need(nrow(plot.data) > 0, msgPlot))
-    plot.base <- ggplot(plot.data, aes(x = Gene, fill = Stage)) + facet_wrap(~ Strain) + 
-                 ggtitle('Normalized Expression Levels') + common.theme
+    validate(
+      need(
+        nrow(plot.data) > 0, msgPlot
+      )
+    )
+    plot.base <- ggplot(plot.data, aes(x = Gene, fill = Stage)) + 
+                 facet_wrap(~ Strain) + 
+                 ggtitle('Normalized Expression Levels') + 
+                 common.theme
     if (input$log2)
-      plot.base + geom_boxplot(aes(y = Expression)) + ylab(expression(log[2] * ' Expression Level (AU)'))
+      plot.base + 
+      geom_boxplot(aes(y = Expression)) + 
+      ylab(expression(log[2] * ' Expression Level (AU)'))
     else
-      plot.base + geom_boxplot(aes(y = 2 ^ Expression)) + ylab('Expression Level (AU)')
+      plot.base + 
+      geom_boxplot(aes(y = 2 ^ Expression)) + 
+      ylab('Expression Level (AU)')
   })
   
   # Render bar plots with differential expression levels
   output$BarPlot1 <- renderPlot({
     plot.data <- data3()
-    validate(need(nrow(plot.data) > 0, msgPlot))
+    validate(
+      need(
+        nrow(plot.data) > 0, msgPlot
+      )
+    )
     plot.base <- ggplot(plot.data, aes(x = Gene)) +
-                 ggtitle('Differential Expression Levels') + common.theme
+                 ggtitle('Differential Expression Levels') + 
+                 common.theme
     if (input$log1)
-      plot.base + geom_bar(aes(y = logFC), stat = 'identity') +
-                  geom_errorbar(aes(ymax = logFC.U, ymin = logFC.L), width = I(0.5)) +
-                  ylab(expression(log[2] * ' Fold Change'))
+      plot.base + 
+      geom_bar(aes(y = logFC), stat = 'identity') +
+      geom_errorbar(aes(ymax = logFC.U, ymin = logFC.L), width = I(0.5)) +
+      ylab(expression(log[2] * ' Fold Change'))
     else
-      plot.base + geom_bar(aes(y = FC), stat = 'identity') +
-                  geom_errorbar(aes(ymax = FC.U, ymin = FC.L), width = I(0.5)) +
-                  ylab('Fold Change')
+      plot.base + 
+      geom_bar(aes(y = FC), stat = 'identity') +
+      geom_errorbar(aes(ymax = FC.U, ymin = FC.L), width = I(0.5)) +
+      ylab('Fold Change')
   })
 
   output$BarPlot2 <- renderPlot({
-    validate(need(length(input$conditions) > 0, msgConditionPlot))
+    validate(
+      need(
+        length(input$conditions) > 0, msgConditionPlot
+      )
+    )
     plot.data <- data4()
-    validate(need(nrow(plot.data) > 0, msgPlot))
-    plot.base <- ggplot(plot.data, aes(x = Gene)) + facet_wrap(~ Strain) +
-                 ggtitle('Differential Expression Levels') + common.theme
+    validate(
+      need(
+        nrow(plot.data) > 0, msgPlot
+      )
+    )
+    plot.base <- ggplot(plot.data, aes(x = Gene)) + 
+                 facet_wrap(~ Strain) +
+                 ggtitle('Differential Expression Levels') + 
+                 common.theme
     if (input$log2)
-      plot.base + geom_bar(aes(y = logFC), stat = 'identity') +
-                  geom_errorbar(aes(ymax = logFC.U, ymin = logFC.L), width = I(0.5)) +
-                  ylab(expression(log[2] * ' Fold Change'))
+      plot.base + 
+      geom_bar(aes(y = logFC), stat = 'identity') +
+      geom_errorbar(aes(ymax = logFC.U, ymin = logFC.L), width = I(0.5)) +
+      ylab(expression(log[2] * ' Fold Change'))
     else
-      plot.base + geom_bar(aes(y = FC), stat = 'identity') +
-                  geom_errorbar(aes(ymax = FC.U, ymin = FC.L), width = I(0.5)) +
-                  ylab('Fold Change')
+      plot.base + 
+      geom_bar(aes(y = FC), stat = 'identity') +
+      geom_errorbar(aes(ymax = FC.U, ymin = FC.L), width = I(0.5)) +
+      ylab('Fold Change')
   })
   
   # Render tables with differential expression levels
   output$Table1 <- renderDataTable({
     table.data <- data3()
-    validate(need(nrow(table.data) > 0, msgTable))
+    validate(
+      need(
+        nrow(table.data) > 0, msgTable
+      )
+    )
     table.data$Gene <- sapply(table.data$Gene, link.wb)
-    table.data}, escape = F)
+    format(table.data, digits = 3)
+  }, escape = F)
   
-  output$Table2.1 <- renderDataTable({
-    validate(need('N2' %in% input$conditions, msgConditionTable))
+  output$Table2 <- renderDataTable({
     table.data <- data4()
+    validate(
+      need(
+        nrow(table.data) > 0, msgTable
+      )
+    )
     table.data$Gene <- sapply(table.data$Gene, link.wb)
-    table.data[table.data$Strain == 'N2', -2]}, escape = F)
-
-  output$Table2.2 <- renderDataTable({
-    validate(need('daf-2' %in% input$conditions, msgConditionTable))
-    table.data <- data4()
-    table.data$Gene <- sapply(table.data$Gene, link.wb)
-    table.data[table.data$Strain == 'daf-2', -2]}, escape = F)
-  
-  output$Table2.3 <- renderDataTable({
-    validate(need('daf-2;daf-12' %in% input$conditions, msgConditionTable))
-    table.data <- data4()
-    table.data$Gene <- sapply(table.data$Gene, link.wb)
-    table.data[table.data$Strain == 'daf-2;daf-12', -2]}, escape = F)
-  
-  output$Table2.4 <- renderDataTable({
-    validate(need('daf-16' %in% input$conditions, msgConditionTable))
-    table.data <- data4()
-    table.data$Gene <- sapply(table.data$Gene, link.wb)
-    table.data[table.data$Strain == 'daf-16', -2]}, escape = F)
+    format(table.data, digits = 3)
+  }, escape = F)
 }
 
 # GUI function
 ui <- shinyUI(
-  navbarPage(title = 'Kurzchalia Microarray Database 0.1', collapsible = T, windowTitle = 'Kurzchalia Microarray Database',
+  navbarPage(title = 'Kurzchalia Microarray Database 0.1', 
+             collapsible = T, 
+             windowTitle = 'Kurzchalia Microarray Database',
     tabPanel('Desiccation',   
       fluidPage(
         titlePanel("Desiccation"),
-          sidebarLayout(  
-            sidebarPanel(
-              radioButtons('query1', 'Search for', c('Genes', 'A gene class'), inline = T),
-              conditionalPanel('input.query1 == "Genes"',
-                withTags(
-                  div(class = 'geneEntry', 
-                    style(type = "text/css", "textarea {width:100%}"),
-                    label('Gene names:'),
-                    textarea(name = "text1", rows = 3, wrap = 'soft', placeholder = msgEntry))
+        sidebarLayout(  
+          sidebarPanel(
+            radioButtons('query1', 'Search for', c('Genes', 'A gene class'), inline = T),
+            conditionalPanel('input.query1 == "Genes"',
+              withTags(
+                div(class = 'geneEntry', 
+                  style(type = "text/css", "textarea {width:100%}"),
+                  label('Gene names:'),
+                  textarea(name = "text1", rows = 3, wrap = 'soft', placeholder = msgEntry)
                 )
-              ),
-              conditionalPanel('input.query1 == "A gene class"',
-                selectInput('geneClass01', 'Gene classes:', choices = geneClass1, selectize = T)
-              ),
-              checkboxInput("log1", label = HTML(paste0('Show y-axis in log', tags$sub(2), ' scale')))
+              )
             ),
-      
-      mainPanel(
-        tabsetPanel(
-          tabPanel("Expression Levels", plotOutput('BoxPlot1'), icon = icon('area-chart')),
-          tabPanel("Differential Expression", plotOutput('BarPlot1'), icon = icon('bar-chart')),
-          tabPanel("Numerical Results", dataTableOutput('Table1'), icon = icon('table'))
-        )
-      )
+            conditionalPanel('input.query1 == "A gene class"',
+              selectInput('geneClass01', 'Gene classes:', choices = geneClass1, selectize = T)
+            ),
+            checkboxInput("log1", label = HTML(paste0('Show y-axis in log', tags$sub(2), ' scale')))
+          ),
+    
+          mainPanel(
+            tabsetPanel(
+              tabPanel("Expression Levels", plotOutput('BoxPlot1'), icon = icon('area-chart')),
+              tabPanel("Differential Expression", plotOutput('BarPlot1'), icon = icon('bar-chart')),
+              tabPanel("Numerical Results", dataTableOutput('Table1'), icon = icon('table'))
+            )
           )
+        )
       )
     ),
 
-  tabPanel('Hypometabolism',   
-    fluidPage(
-      titlePanel("Hypometabolism"),
+    tabPanel('Hypometabolism',   
+      fluidPage(
+        titlePanel("Hypometabolism"),
         sidebarLayout(  
           sidebarPanel(
             radioButtons('query2', 'Search for', c('Genes', 'A gene class'), inline = T),
@@ -226,29 +266,28 @@ ui <- shinyUI(
             conditionalPanel('input.query2 == "A gene class"',
               selectInput('geneClass02', 'Gene classes:', choices = geneClass2, selectize = T)
             ),
-            checkboxInput(inputId = "log2", label = HTML(paste0('Show y-axis in log', tags$sub(2), ' scale'))),
-            checkboxGroupInput(inputId = 'conditions', label = 'Strains', choices = levels(expr3$Strain), selected = levels(expr3$Strain))
+            checkboxInput(inputId = "log2", 
+                          label = HTML(paste0('Show y-axis in log', tags$sub(2), ' scale'))),
+            checkboxGroupInput(inputId = 'conditions', 
+                               label = 'Strains', 
+                               choices = levels(expr3$Strain), 
+                               selected = levels(expr3$Strain))
           ),
                
-      mainPanel(
-        tabsetPanel(
-          tabPanel("Expression Levels", plotOutput('BoxPlot2'), icon = icon('area-chart')),
-          tabPanel("Differential Expression", plotOutput('BarPlot2'), icon = icon('bar-chart')),
-          tabPanel("Numerical Results",
+          mainPanel(
             tabsetPanel(
-              tabPanel('N2', tableOutput('Table2.1')),
-              tabPanel('daf-2', tableOutput('Table2.2')),
-              tabPanel('daf-2;daf-12', tableOutput('Table2.3')),
-              tabPanel('daf-16', tableOutput('Table2.4'))
+              tabPanel("Expression Levels", plotOutput('BoxPlot2'), icon = icon('area-chart')),
+              tabPanel("Differential Expression", plotOutput('BarPlot2'), icon = icon('bar-chart')),
+              tabPanel("Numerical Results", dataTableOutput('Table2'), icon = icon('table'))
             )
           )
         )
       )
-        )
-      )
-  ),
+    ),
 
-  tabPanel('Help', includeMarkdown('Help.md'))
+    tabPanel('Help', 
+      includeMarkdown('Help.md')
+    )
   )
 )
 
