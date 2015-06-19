@@ -86,6 +86,8 @@ Results from the **desiccation** dataset can be used in publications by citing t
 
 *Erkut C, Vasilj A, Boland S, Habermann B, Shevchenko A and Kurzchalia TV (2013) Molecular Strategies of the Caenorhabditis elegans Dauer Larva to Survive Extreme Desiccation. PLoS ONE 8(12): e82473. doi: [10.1371/journal.pone.0082473][2]*
 
+This software is open source and licensed under [AGPL](http://www.gnu.org/licenses/agpl.html). Please find the source code [here](https://github.com/cihanerkut/KMDB).
+
 [1]: https://www.ebi.ac.uk/arrayexpress/experiments/E-MEXP-3899/  "ArrayExpress"
 [2]: http://doi.org/10.1371/journal.pone.0082473  "Article"
 [3]: http://www.r-project.org "R-project"
