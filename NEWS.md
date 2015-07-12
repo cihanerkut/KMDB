@@ -13,6 +13,7 @@ Improvements:
 
 * Gene entry can be made in several lines
 * Table view improved for searching and sorting
+* Data load happens only once on the server
 
 **Version 0.1**
 
